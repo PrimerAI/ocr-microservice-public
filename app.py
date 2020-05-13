@@ -51,16 +51,21 @@ def upload_file():
 
                 pdf = PdfFileReader(filepath)
 
+                page_filepaths = list()
+                extracted_texts = list()
+
                 for page in range(pdf.getNumPages()):
                     pdf_writer = PdfFileWriter()
                     pdf_writer.addPage(pdf.getPage(page))
 
-                pdf_image = wi(filename=filepath, resolution=900).convert("jpeg")
+                    page_filepath = f'page_{page+1}'
+                    with open(page_filepath, 'wb') as f:
+                        pdf_writer.write(f)
+                        page_filepaths.append(page_filepath)
 
-                extracted_texts = list()
-                temp_jpg_filepath = "page.jpg"  # TODO:  use tempfile
-                for ix, page_img in enumerate(pdf_image.sequence):
-                    wi(image=page_img).save(filename=temp_jpg_filepath)
+                    temp_jpg_filepath = "page.jpg"  # TODO:  use tempfile
+                    with wi(filename=filepath, resolution=900).convert("jpeg") as pdf_image:
+                        wi(image=pdf_image).save(filename=temp_jpg_filepath)
                     extracted_texts.append(extract_text_from_image(temp_jpg_filepath))
                     os.remove(temp_jpg_filepath)
 
