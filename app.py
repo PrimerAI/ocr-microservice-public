@@ -3,11 +3,13 @@ from werkzeug.utils import secure_filename
 import os
 import sys
 from PIL import Image
+from pdfminer.high_level import extract_text
+from PyPDF2 import PdfFileReader, PdfFileWriter
 import pytesseract
 import argparse
 import cv2
+from wand.image import Image as wi
 
-__author__ = 'James Campbell <james@jamescampbell.us>'
 __source__ = ''
 
 app = Flask(__name__)
@@ -38,43 +40,77 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         f.save(filepath)
 
-        # load the example image and convert it to grayscale
-        image = cv2.imread(filepath)
-        # handle tifs since they dont display in web post ocr process
-        filenamefix = ''
-        if filepath.endswith('.tif'):
-            im = Image.open(filepath)
-            filenamefix = filepath.rsplit('.',1)[0]+'.jpg'
-            filenamefix = filenamefix.rsplit('/',1)[1]
-            print(filenamefix)
-            filepathfix = os.path.join(app.config['UPLOAD_FOLDER'], filenamefix)
-            out = im.convert("RGB")
-            out.save(filepathfix, "JPEG", quality=80)
-        # convert image to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        if filepath.endswith('.pdf'):
+            # try to extract text from the PDF directly
+            text = extract_text(filepath)
 
-        # apply thresholding to preprocess the image
-        gray = cv2.threshold(
-            gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+            # TODO:  Better heuristic for failure
+            if len(text) < 50:
+                # no embedded text; convert to image, splitting into pages to avoid
+                # memory limits for high resolution conversions
 
-        # apply median blurring to remove any blurring
-        gray = cv2.medianBlur(gray, 3)
+                pdf = PdfFileReader(filepath)
 
-        # save the processed image in the /static/uploads directory
-        ofilename = os.path.join(
-            app.config['UPLOAD_FOLDER'], "{}.png".format(os.getpid()))
-        cv2.imwrite(ofilename, gray)
+                for page in range(pdf.getNumPages()):
+                    pdf_writer = PdfFileWriter()
+                    pdf_writer.addPage(pdf.getPage(page))
 
-        # perform OCR on the processed image
-        text = pytesseract.image_to_string(
-            Image.open(ofilename), lang="eng+ara+fra+rus+chi_sim")
+                pdf_image = wi(filename=filepath, resolution=900).convert("jpeg")
 
-        # remove the processed image
-        os.remove(ofilename)
-        if filenamefix != '':
-            filename = filenamefix
+                extracted_texts = list()
+                temp_jpg_filepath = "page.jpg"  # TODO:  use tempfile
+                for ix, page_img in enumerate(pdf_image.sequence):
+                    wi(image=page_img).save(filename=temp_jpg_filepath)
+                    extracted_texts.append(extract_text_from_image(temp_jpg_filepath))
+                    os.remove(temp_jpg_filepath)
+
+                text = "\n".join(extracted_texts)
+
+        else:
+            text = extract_text_from_image(filepath)
         return render_template("uploaded.html", displaytext=text, fname=filename)
 
+
+# TODO -- Put this in a module, not app.py
+def extract_text_from_image(filepath):
+
+    # load the example image and convert it to grayscale
+    image = cv2.imread(filepath)
+    # handle tifs since they dont display in web post ocr process
+    filenamefix = ''
+
+    if filepath.endswith('.tif'):
+        im = Image.open(filepath)
+        filenamefix = filepath.rsplit('.',1)[0]+'.jpg'
+        filenamefix = filenamefix.rsplit('/',1)[1]
+        filepathfix = os.path.join(app.config['UPLOAD_FOLDER'], filenamefix)
+        out = im.convert("RGB")
+        out.save(filepathfix, "JPEG", quality=80)
+    # convert image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # apply thresholding to preprocess the image
+    gray = cv2.threshold(
+        gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+
+    # apply median blurring to remove any blurring
+    gray = cv2.medianBlur(gray, 3)
+
+    # save the processed image in the /static/uploads directory
+    ofilename = os.path.join(
+        app.config['UPLOAD_FOLDER'], "{}.png".format(os.getpid()))
+    cv2.imwrite(ofilename, gray)
+
+    # perform OCR on the processed image
+    text = pytesseract.image_to_string(
+        Image.open(ofilename), lang="eng")
+
+    # remove the processed image
+    os.remove(ofilename)
+    if filenamefix != '':
+        filename = filenamefix
+
+    return text
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -1,6 +1,7 @@
 certifi==2018.11.29
 Click==7.0
 Flask==1.0.2
+ghostscript
 gunicorn==19.9.0
 itsdangerous==1.1.0
 Jinja2>=2.10.1
@@ -8,5 +9,8 @@ MarkupSafe==1.1.0
 numpy==1.17.3
 opencv-contrib-python==3.4.8.29
 Pillow==6.2.2
+pdfminer.six
+PyPDF2
 pytesseract==0.2.6
+Wand
 werkzeug==0.16.0
