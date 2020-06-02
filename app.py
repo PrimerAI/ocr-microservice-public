@@ -63,6 +63,7 @@ def upload_file():
                         pdf_writer.write(f)
                         page_filepaths.append(page_filepath)
 
+                for filepath in page_filepaths:
                     temp_jpg_filepath = "page.jpg"  # TODO:  use tempfile
                     with wi(filename=filepath, resolution=900).convert("jpeg") as pdf_image:
                         wi(image=pdf_image).save(filename=temp_jpg_filepath)
