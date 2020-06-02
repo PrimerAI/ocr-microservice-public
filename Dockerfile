@@ -11,4 +11,4 @@ RUN pip install -r /tmp/requirements.txt
 
 COPY . /app
 WORKDIR /app
-CMD python -m pdb app.py
+CMD python app.py
