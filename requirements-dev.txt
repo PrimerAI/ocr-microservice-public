@@ -1,0 +1,5 @@
+primer-micro-utils[dev,flask,lint,gunicorn,redis,sqlalchemy,test]==3.11.4
+
+docker==4.2.2
+
+-r requirements-test.txt

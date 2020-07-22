@@ -1,0 +1,17 @@
+version: "3.2"
+services:
+  web:
+    container_name: ocr-microservice
+    image: ocr-microservice:dev
+    environment:
+      - ACCEPTED_DOMAINS=.*
+    ports:
+      - 8000:8000
+    networks:
+      - net
+
+networks:
+  net:
+    ipam:
+      config:
+        - subnet: 192.168.121.0/24
