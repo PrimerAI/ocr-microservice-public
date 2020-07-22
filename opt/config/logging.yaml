@@ -1,0 +1,69 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  request: { format: "%(message)s" }
+  verbose:
+    {
+      format: "%(asctime)s %(levelname)-8s (%(filename)s:%(lineno)d) %(module)s:%(funcName)s %(message)s",
+    }
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: verbose
+    level: DEBUG
+    stream: "ext://sys.stderr"
+  request_console:
+    class: logging.StreamHandler
+    formatter: request
+    level: DEBUG
+    stream: "ext://sys.stderr"
+loggers:
+  alembic:
+    handlers: [console]
+    level: WARNING
+    propagate: false
+  werkzeug:
+    # disable double print on route names by not supplying a handler
+    handlers: [console]
+    level: WARNING
+    propagate: false
+  elasticsearch:
+    handlers: [console]
+    level: INFO
+    propagate: false
+  elasticsearch.trace:
+    handlers: [console]
+    level: WARNING
+    propagate: false
+  sqlalchemy:
+    handlers: [console]
+    level: WARNING
+    propagate: false
+  urllib3:
+    handlers: [console]
+    level: WARNING
+    propagate: false
+  datadog:
+    handlers: [console]
+    level: CRITICAL
+    propagate: false
+  ddtrace:
+    handlers: [console]
+    level: CRITICAL
+    propagate: false
+  web.request:
+    handlers: [request_console]
+    level: DEBUG
+    propagate: false
+  app:
+    handlers: [console]
+    level: DEBUG
+    propagate: false
+  # root logger
+  "":
+    # Filter all app-related messages here, effects logging from all
+    # modules, eg elasticsearch
+    handlers: [console]
+    level: DEBUG
+    propagate: true
