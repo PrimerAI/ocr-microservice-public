@@ -13,14 +13,12 @@ workon ocr-microservice
 
 ```
 make docker-build
-
 ```
 
 ## Running the App
 
 ```
 make docker-start
-
 ```
 
 Then open up browser to http://localhost:8000/api_doc/v1/ to see the swagger docs
@@ -29,11 +27,11 @@ Then open up browser to http://localhost:8000/api_doc/v1/ to see the swagger doc
 
 ### Postman
 
-Create a Request with the following settings:
-POST http://localhost:8000/api/v1/ocr/
-Body: form-data
-KEY: file
-hover over the key name to see the drop-down, and select File
+Create a Request with the following settings:  
+POST http://localhost:8000/api/v1/ocr/  
+Body: form-data  
+KEY: file  
+hover over the key name to see the drop-down, and select File  
 VALUE: browse to your desired file
 
 ### cURL
