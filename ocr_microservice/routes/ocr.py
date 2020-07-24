@@ -71,7 +71,7 @@ class OCRHandler(Resource):
                 # no embedded text; convert to image, splitting into pages to avoid
                 # memory limits for high resolution conversions
 
-                pdf = PdfFileReader(infile)
+                pdf = PdfFileReader(infile, strict=False)
 
                 page_filepaths = list()
                 extracted_texts = list()
@@ -85,15 +85,15 @@ class OCRHandler(Resource):
                         pdf_writer.write(f)
                         page_filepaths.append(page_filepath)
 
-                for filepath in page_filepaths:
+                for fp in page_filepaths:
                     temp_jpg_filepath = "page.jpg"  # TODO:  use tempfile
-                    with wi(filename=filepath, resolution=900).convert(
+                    with wi(filename=fp, resolution=900).convert(
                             "jpeg"
                     ) as pdf_image:
                         wi(image=pdf_image).save(filename=temp_jpg_filepath)
-                    extracted_texts.append(self.extract_text_from_image(temp_jpg_filepath))
+                    extracted_texts.append(self.extract_text_from_image(infile, temp_jpg_filepath))
                     os.remove(temp_jpg_filepath)
-                    os.remove(filepath)
+                    os.remove(fp)
 
                 text = "\n".join(extracted_texts)
 
