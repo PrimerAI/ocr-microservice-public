@@ -25,7 +25,9 @@ from primer_micro_utils.namespace import Namespace
 
 from werkzeug.datastructures import FileStorage
 
-UPLOAD_FOLDER = "/code/"
+from ocr_microservice.config import config
+
+UPLOAD_FOLDER = config.get_file_upload_path()
 
 ocr = Namespace("ocr", description="Ping Namespace and Endpoints")
 
@@ -120,6 +122,9 @@ class OCRHandler(Resource):
             out.save(filepathfix, "JPEG", quality=80)
         # convert image to grayscale
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # apply a small gaussian blur before Otsu's threshold
+        gray = cv2.GaussianBlur(gray, (3, 3), 0)
 
         # apply thresholding to preprocess the image
         gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
