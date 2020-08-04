@@ -9,5 +9,8 @@ from ocr_microservice.schemas.responses import (
 __all__ = [
     "OCRRequest",
     "OCRResponse",
+    "CVTemplateMatchRequest",
+    "CVTextMatchRequest",
+    "CVTemplateMatchResponse",
     "PingResponse",
 ]

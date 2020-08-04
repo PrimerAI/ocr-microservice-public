@@ -25,7 +25,7 @@ class CVTemplateMatchResponse(Schema):
     DOCUMENT_FILENAME = "document_filename"
 
     # This could be a nested schema, but that seems messier for the scope.
-    matches = fields.Dict()  # {template_filename: [{'template_name':str, 'pos':[x,y], 'conf':#.#}]}
+    matches = fields.List()  # [{'template_text':str, 'bbox':[x,y,w,h], 'conf':#.#}]
     document_filename = fields.Str()
 
 

@@ -37,7 +37,7 @@ class OCRRequest(Schema):
     )
 
 
-class CVTemplateRequest(Schema):
+class CVTemplateMatchRequest(Schema):
     """Parameter definition for doing template matching on a document."""
     DOCUMENT = "document"
     TEMPLATE = "template"
