@@ -35,3 +35,47 @@ class OCRRequest(Schema):
         required=True,
         description="File data to be processed",
     )
+
+
+class CVTemplateRequest(Schema):
+    """Parameter definition for doing template matching on a document."""
+    DOCUMENT = "document"
+    TEMPLATE = "template"
+
+    document = fields.Raw(
+        attribute=DOCUMENT,
+        required=True,
+        description="A PDF or image to be used as the target for multi-resolution matching.",
+    )
+
+    template = fields.Raw(
+        attribute=TEMPLATE,
+        required=True,
+        description="An image to be used as a template for searching inside the document."
+    )
+
+
+class CVTextMatchRequest(Schema):
+    """Similar to CVTemplateRequest, but takes text to be matched and rasterizes it."""
+    DOCUMENT = "document"
+    TEXT = "text"
+    THRESHOLD = "threshold"
+
+    document = fields.Raw(
+        attribute=DOCUMENT,
+        required=True,
+        description="A PDF or image to be used as the target for multi-resolution matching.",
+    )
+
+    texts = fields.List(
+        attribute=TEXT,
+        required=True,
+        description="A list of one or more strings to be rasterized and search in the document."
+    )
+
+    threshold = fields.Float(
+        attribute=THRESHOLD,
+        required=False,
+        missing=0.0,
+        description="Matches which fall below this value will be culled and not returned."
+    )

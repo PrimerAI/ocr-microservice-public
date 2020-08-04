@@ -19,6 +19,16 @@ class OCRResponse(Schema):
     mimetype = fields.Str()
 
 
+class CVTemplateMatchResponse(Schema):
+    """Response for CV Template match endpoint"""
+    MATCHES = "matches"
+    DOCUMENT_FILENAME = "document_filename"
+
+    # This could be a nested schema, but that seems messier for the scope.
+    matches = fields.Dict()  # {template_filename: [{'template_name':str, 'pos':[x,y], 'conf':#.#}]}
+    document_filename = fields.Str()
+
+
 class PingResponse(Schema):
     """Reponse from ping endpoint."""
 
