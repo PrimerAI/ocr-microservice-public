@@ -5,5 +5,6 @@ from ocr_microservice.routes.ping import ping
 
 __all__ = [
     "ping",
+    "cv",
     "ocr",
 ]

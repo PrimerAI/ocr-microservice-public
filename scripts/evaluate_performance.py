@@ -45,7 +45,13 @@ def simple_doc_evaluation():
 
     ground_truth = open(example_dir / "simple_doc.txt", 'rt').read()
 
-    example_filenames = ["simple_doc.pdf", "simple_doc.png"]
+    example_filenames = [
+        "simple_doc.pdf",
+        "simple_doc.png",
+        "simple_doc_noisy_scan.png",
+        "simple_doc_noisy_scan_bad_crop.png",
+        "simple_doc_noisy_scan_bad_crop_rotated.png",
+    ]
     for ex_name in example_filenames:
         ex = example_dir / ex_name
         ex_txt = do_ocr(ex)
@@ -61,11 +67,12 @@ def simple_doc_evaluation():
     return complete_failures, complete_successes, average_word_overlap
 
 
-def main(notes=""):
+def main(notes="", log=True):
     fail, succeed, overlap = simple_doc_evaluation()
-    with open("performance_history.txt", 'a+') as fout:
-        report = f"{datetime.utcnow()}\t{fail}\t{succeed}\t{overlap}\t{notes}\n"
-        fout.write(report)
+    report = f"{datetime.utcnow()}\t{fail}\t{succeed}\t{overlap}\t{notes}\n"
+    if log:
+        with open("performance_history.txt", 'a+') as fout:
+            fout.write(report)
     print(report)
 
 
@@ -73,4 +80,5 @@ if __name__=="__main__":
     notes = ""
     if len(sys.argv) > 1:
         notes = sys.argv[1]
-    main(notes)
+    savelog = "--nolog" not in sys.argv
+    main(notes, savelog)
