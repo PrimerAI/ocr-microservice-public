@@ -140,7 +140,8 @@ def match_template_in_image(
     template_image = cv2.cvtColor(template_image, cv2.COLOR_BGR2GRAY)
 
     # Our matching method will be basically a dot product, so we want edge responses.
-    template_edges = _edge_detect(template_image)
+    #template_edges = _edge_detect(template_image)
+    template_edges = template_image
 
     # For a multitude of scales, retry the finds of the template_image on the doc_image.
     # Since scaling up the template doesn't get us additional resolution and costs us more compute,
@@ -158,7 +159,8 @@ def match_template_in_image(
         cv2.resize(doc_image, dsize=None, dst=search_image, fx=1.0/float(scale), fy=1.0/float(scale))
 
         # Compute the edges _NOW_ rather than before reduction so we actually get fovation.
-        search_edges = _edge_detect(search_image)
+        #search_edges = _edge_detect(search_image)
+        search_edges = search_image
 
         # Template match, resize our response, and accumulate it.
         scaled_match_response = cv2.matchTemplate(search_edges, template_edges, cv2.TM_CCORR_NORMED)
@@ -206,8 +208,8 @@ def match_text_in_image(
 ):
     # Assuming 96 DPI, 6pt = 8px.  12pt = 16px.
     # Allocate a drawing area fitting of the text size.
-    bg_color = (0, 0, 0)
-    fg_color = (255, 255, 255)
+    bg_color = (255, 255, 255)
+    fg_color = (0, 0, 0)
     template_size = (int(len(text)*text_size), int((1+text.count('\n'))*text_size*1.5))
 
     template = Image.new("RGB", template_size, bg_color)

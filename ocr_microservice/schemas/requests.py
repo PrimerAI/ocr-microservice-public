@@ -67,15 +67,15 @@ class CVTextMatchRequest(Schema):
         description="A PDF or image to be used as the target for multi-resolution matching.",
     )
 
-    texts = fields.List(
+    text = fields.Str(
         attribute=TEXT,
         required=True,
-        description="A list of one or more strings to be rasterized and search in the document."
+        description="A string to be rasterized and used to search the document."
     )
 
     threshold = fields.Float(
         attribute=THRESHOLD,
         required=False,
-        missing=0.0,
+        missing=0.9,
         description="Matches which fall below this value will be culled and not returned."
     )
