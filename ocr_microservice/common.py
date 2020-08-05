@@ -26,7 +26,7 @@ def safe_store_file(infile: FileStorage) -> Path:
 def file_image_iterator(infile: FileStorage, filepath: Path):
     """A convenience method to provide an upload from Flask and get back a CV2 image iterator."""
     if filepath.suffix == ".pdf":
-        pdf = PdfFileReader(infile)
+        pdf = PdfFileReader(infile, strict=False)
         for page in range(pdf.getNumPages()):
             pdf_writer = PdfFileWriter()
             pdf_writer.addPage(pdf.getPage(page))
