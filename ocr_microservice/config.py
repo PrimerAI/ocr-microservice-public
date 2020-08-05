@@ -1,8 +1,4 @@
 """Define the configuration file for this Application."""
-import json
-import os
-import sys
-
 from primer_micro_utils.config import Config
 
 
